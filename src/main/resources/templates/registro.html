@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/navbar.html :: header( title = 'Registro de Usuario')}"></head>
+<body>
+    <!-- Incluir navbar -->
+    <div th:replace="~{fragments/navbar.html :: navbar}"></div>
+    
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Título -->
+                <div class="text-center mb-4">
+                    <h1 class="page-title fade-in-up">
+                        <i class="fas fa-user-plus text-primary"></i> Registro de Usuario
+                    </h1>
+                    <p class="text-muted fade-in-up">Únete a nuestra comunidad de amistad y mensajes</p>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Formulario de Registro -->
+                <div class="user-card fade-in-up">
+                    <div class="card-header text-center">
+                        <h3 class="mb-0">
+                            <i class="fas fa-heart text-warning"></i> Crear Cuenta Nueva
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Mensaje de error general -->
+                        <div th:if="${error}" class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span th:text="${error}">Error</span>
+                        </div>
+
+                        <!-- Formulario -->
+                        <form th:action="@{/registro}" method="post" th:object="${registroDto}" novalidate>
+                            
+                            <!-- Nombre y Apellido -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre" class="form-label">
+                                        <i class="fas fa-user text-primary"></i> Nombre *
+                                    </label>
+                                    <input type="text" class="form-control" 
+                                           th:field="*{nombre}" 
+                                           th:class="${#fields.hasErrors('nombre')} ? 'form-control is-invalid' : 'form-control'"
+                                           placeholder="Ingrese su nombre"
+                                           maxlength="50">
+                                    <div th:if="${#fields.hasErrors('nombre')}" class="invalid-feedback">
+                                        <span th:errors="*{nombre}"></span>
+                                    </div>
+                                    <div class="form-text">Solo letras y espacios, sin números</div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="apellido" class="form-label">
+                                        <i class="fas fa-user text-primary"></i> Apellido *
+                                    </label>
+                                    <input type="text" class="form-control" 
+                                           th:field="*{apellido}" 
+                                           th:class="${#fields.hasErrors('apellido')} ? 'form-control is-invalid' : 'form-control'"
+                                           placeholder="Ingrese su apellido"
+                                           maxlength="50">
+                                    <div th:if="${#fields.hasErrors('apellido')}" class="invalid-feedback">
+                                        <span th:errors="*{apellido}"></span>
+                                    </div>
+                                    <div class="form-text">Solo letras y espacios, sin números</div>
+                                </div>
+                            </div>
+
+                            <!-- Correo y Edad -->
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="correo" class="form-label">
+                                        <i class="fas fa-envelope text-success"></i> Correo Electrónico *
+                                    </label>
+                                    <input type="email" class="form-control" 
+                                           th:field="*{correo}" 
+                                           th:class="${#fields.hasErrors('correo')} ? 'form-control is-invalid' : 'form-control'"
+                                           placeholder="ejemplo@correo.com"
+                                           maxlength="100">
+                                    <div th:if="${#fields.hasErrors('correo')}" class="invalid-feedback">
+                                        <span th:errors="*{correo}"></span>
+                                    </div>
+                                    <div class="form-text">Formato válido: usuario@dominio.com</div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="edad" class="form-label">
+                                        <i class="fas fa-birthday-cake text-warning"></i> Edad *
+                                    </label>
+                                    <input type="number" class="form-control" 
+                                           th:field="*{edad}" 
+                                           th:class="${#fields.hasErrors('edad')} ? 'form-control is-invalid' : 'form-control'"
+                                           placeholder="18"
+                                           min="18" max="120">
+                                    <div th:if="${#fields.hasErrors('edad')}" class="invalid-feedback">
+                                        <span th:errors="*{edad}"></span>
+                                    </div>
+                                    <div class="form-text">Mínimo 18 años</div>
+                                </div>
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">
+                                    <i class="fas fa-comment-alt text-info"></i> Descripción Personal *
+                                </label>
+                                <textarea class="form-control" 
+                                          th:field="*{descripcion}" 
+                                          th:class="${#fields.hasErrors('descripcion')} ? 'form-control is-invalid' : 'form-control'"
+                                          rows="3" 
+                                          placeholder="Cuéntanos un poco sobre ti..."
+                                          maxlength="255"></textarea>
+                                <div th:if="${#fields.hasErrors('descripcion')}" class="invalid-feedback">
+                                    <span th:errors="*{descripcion}"></span>
+                                </div>
+                                <div class="form-text">Mínimo 10 caracteres, máximo 255</div>
+                                <small class="text-muted">
+                                    <span id="contadorDescripcion">0</span>/255 caracteres
+                                </small>
+                            </div>
+
+                            <!-- Contraseñas -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="contrasena" class="form-label">
+                                        <i class="fas fa-lock text-danger"></i> Contraseña *
+                                    </label>
+                                    <input type="password" class="form-control" 
+                                           th:field="*{contrasena}" 
+                                           th:class="${#fields.hasErrors('contrasena')} ? 'form-control is-invalid' : 'form-control'"
+                                           placeholder="••••••••"
+                                           maxlength="255">
+                                    <div th:if="${#fields.hasErrors('contrasena')}" class="invalid-feedback">
+                                        <span th:errors="*{contrasena}"></span>
+                                    </div>
+                                    <div class="form-text">Mínimo 6 caracteres y 1 número</div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="confirmarContrasena" class="form-label">
+                                        <i class="fas fa-lock text-danger"></i> Confirmar Contraseña *
+                                    </label>
+                                    <input type="password" class="form-control" 
+                                           th:field="*{confirmarContrasena}" 
+                                           th:class="${#fields.hasErrors('confirmarContrasena')} ? 'form-control is-invalid' : 'form-control'"
+                                           placeholder="••••••••"
+                                           maxlength="255">
+                                    <div th:if="${#fields.hasErrors('confirmarContrasena')}" class="invalid-feedback">
+                                        <span th:errors="*{confirmarContrasena}"></span>
+                                    </div>
+                                    <div class="form-text">Debe coincidir con la contraseña</div>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <!-- Botones -->
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <button type="submit" class="btn btn-success btn-custom w-100">
+                                        <i class="fas fa-user-check"></i> Crear Cuenta
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <a th:href="@{/principal}" class="btn btn-secondary btn-custom w-100">
+                                        <i class="fas fa-arrow-left"></i> Cancelar
+                                    </a>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="text-center mt-4 fade-in-up">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle"></i> ¿Por qué registrarse?</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="fas fa-check text-success"></i> Envía mensajes personalizados</li>
+                            <li><i class="fas fa-check text-success"></i> Recibe regalos virtuales (flores y carritos)</li>
+                            <li><i class="fas fa-check text-success"></i> Participa en el ranking de amistad</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript para contador de caracteres -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descripcionTextarea = document.querySelector('textarea[name="descripcion"]');
+            const contador = document.getElementById('contadorDescripcion');
+            
+            function actualizarContador() {
+                const longitud = descripcionTextarea.value.length;
+                contador.textContent = longitud;
+                
+                // Cambiar color según la longitud
+                if (longitud < 10) {
+                    contador.className = 'text-danger';
+                } else if (longitud > 200) {
+                    contador.className = 'text-warning';
+                } else {
+                    contador.className = 'text-success';
+                }
+            }
+            
+            // Actualizar contador al escribir
+            descripcionTextarea.addEventListener('input', actualizarContador);
+            
+            // Actualizar contador al cargar
+            actualizarContador();
+        });
+    </script>
+    
+    <script th:replace="~{fragments/navbar.html :: footer-bootstrap}"></script>
+</body>
+</html>

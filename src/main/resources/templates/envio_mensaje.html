@@ -9,46 +9,332 @@
         <div class="row">
             <div class="col-12">
                 <h1 class="page-title fade-in-up">
-                    <i class="fas fa-paper-plane text-primary"></i> Enviar Mensaje de Amistad
+                    <i class="fas fa-paper-plane text-primary"></i> Enviar Mensaje Motivacional
                 </h1>
-                <p class="text-center text-muted mb-5 fade-in-up">Comparte amor y amistad con mensajes especiales</p>
+                <p class="text-center text-muted mb-5 fade-in-up">Comparte positividad y alegría con mensajes especiales</p>
             </div>
         </div>
 
         <div class="divider"></div>
 
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-9">
+                
+                <!-- Vista previa del destinatario si viene seleccionado -->
+                <div th:if="${destinatarioSeleccionado}" class="alert alert-success fade-in-up mb-4">
+                    <h5><i class="fas fa-user-check"></i> Destinatario Seleccionado:</h5>
+                    <p class="mb-0">
+                        <strong th:text="${destinatarioSeleccionado.nombre + ' ' + destinatarioSeleccionado.apellido}">Nombre</strong> 
+                        - <span th:text="${destinatarioSeleccionado.correo}">correo</span>
+                    </p>
+                </div>
+
                 <div class="user-card fade-in-up">
                     <div class="card-header text-center">
-                        <h3 class="mb-0"><i class="fas fa-heart text-warning"></i> Formulario de Mensaje</h3>
+                        <h3 class="mb-0">
+                            <i class="fas fa-heart text-warning"></i> Crear Mensaje Motivacional
+                        </h3>
                     </div>
                     <div class="card-body">
-                        <!-- Formulario de envío de mensaje (por implementar) -->
-                        <div class="alert alert-info">
-                            <h4><i class="fas fa-info-circle"></i> Próximamente</h4>
-                            <p>El formulario de envío de mensajes estará disponible pronto.</p>
-                        </div>
                         
-                        <!-- Vista previa del destinatario si viene seleccionado -->
-                        <div th:if="${destinatarioSeleccionado}" class="alert alert-success">
-                            <h5><i class="fas fa-user-check"></i> Destinatario Seleccionado:</h5>
-                            <p><strong th:text="${destinatarioSeleccionado.nombre + ' ' + destinatarioSeleccionado.apellido}">Nombre</strong> 
-                               - <span th:text="${destinatarioSeleccionado.correo}">correo</span></p>
+                        <!-- Mensaje de error general -->
+                        <div th:if="${error}" class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span th:text="${error}">Error</span>
                         </div>
-                        
-                        <div class="divider"></div>
-                        
-                        <div class="text-center">
-                            <a href="/principal" class="btn btn-success btn-custom">
-                                <i class="fas fa-arrow-left"></i> Volver a Principal
-                            </a>
-                        </div>
+
+                        <!-- Formulario de envío de mensaje -->
+                        <form th:action="@{/envio-mensaje}" method="post" th:object="${mensajeDto}" novalidate>
+                            
+                            <!-- Selección de destinatario -->
+                            <div class="mb-4">
+                                <label for="destinatarioId" class="form-label">
+                                    <i class="fas fa-user text-primary"></i> Destinatario *
+                                </label>
+                                <select class="form-select" 
+                                        th:field="*{destinatarioId}" 
+                                        th:class="${#fields.hasErrors('destinatarioId')} ? 'form-select is-invalid' : 'form-select'"
+                                        required>
+                                    <option value="">-- Seleccione un destinatario --</option>
+                                    <option th:each="usuario : ${usuarios}" 
+                                            th:value="${usuario.id}" 
+                                            th:text="${usuario.nombre + ' ' + usuario.apellido + ' (' + usuario.correo + ')'}"
+                                            th:selected="${destinatarioSeleccionado != null and destinatarioSeleccionado.id == usuario.id}">
+                                        Usuario
+                                    </option>
+                                </select>
+                                <div th:if="${#fields.hasErrors('destinatarioId')}" class="invalid-feedback">
+                                    <span th:errors="*{destinatarioId}"></span>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <!-- Selección de regalo -->
+                            <div class="mb-4">
+                                <h5 class="mb-3"><i class="fas fa-gift text-success"></i> Seleccionar Regalo</h5>
+                                
+                                <div class="row">
+                                    <!-- Flor Amarilla -->
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card regalo-option" th:classappend="${mensajeDto.regaloTipo == 'Flor'} ? 'selected' : ''">
+                                            <div class="card-body text-center">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" 
+                                                           th:field="*{regaloTipo}" value="Flor" id="regaloFlor">
+                                                    <label class="form-check-label w-100" for="regaloFlor">
+                                                        <div class="regalo-icon">🌻</div>
+                                                        <h6>Flor Amarilla</h6>
+                                                        <small class="text-muted">Símbolo de alegría y positividad</small>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Carrito -->
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card regalo-option" th:classappend="${mensajeDto.regaloTipo == 'Carrito'} ? 'selected' : ''">
+                                            <div class="card-body text-center">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" 
+                                                           th:field="*{regaloTipo}" value="Carrito" id="regaloCarrito">
+                                                    <label class="form-check-label w-100" for="regaloCarrito">
+                                                        <div class="regalo-icon">🛒</div>
+                                                        <h6>Carrito de Amistad</h6>
+                                                        <small class="text-muted">Lleno de buenos deseos</small>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Error de tipo de regalo -->
+                                <div th:if="${#fields.hasErrors('regaloTipo')}" class="text-danger">
+                                    <small><i class="fas fa-exclamation-circle"></i> <span th:errors="*{regaloTipo}"></span></small>
+                                </div>
+                            </div>
+
+                            <!-- Selección de color para carrito (se muestra solo si es carrito) -->
+                            <div id="colorCarrito" class="mb-4" style="display: none;">
+                                <label for="regaloColor" class="form-label">
+                                    <i class="fas fa-palette text-warning"></i> Color del Carrito *
+                                </label>
+                                <div class="row">
+                                    <div class="col-6 col-md-3 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" th:field="*{regaloColor}" value="Rojo" id="colorRojo">
+                                            <label class="form-check-label color-option" for="colorRojo">
+                                                <span class="color-circle" style="background-color: #dc3545;"></span> Rojo
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" th:field="*{regaloColor}" value="Azul" id="colorAzul">
+                                            <label class="form-check-label color-option" for="colorAzul">
+                                                <span class="color-circle" style="background-color: #007bff;"></span> Azul
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" th:field="*{regaloColor}" value="Verde" id="colorVerde">
+                                            <label class="form-check-label color-option" for="colorVerde">
+                                                <span class="color-circle" style="background-color: #28a745;"></span> Verde
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" th:field="*{regaloColor}" value="Morado" id="colorMorado">
+                                            <label class="form-check-label color-option" for="colorMorado">
+                                                <span class="color-circle" style="background-color: #6f42c1;"></span> Morado
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${#fields.hasErrors('regaloColor')}" class="text-danger mt-2">
+                                    <small><i class="fas fa-exclamation-circle"></i> <span th:errors="*{regaloColor}"></span></small>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <!-- Mensaje motivacional -->
+                            <div class="mb-4">
+                                <label for="contenido" class="form-label">
+                                    <i class="fas fa-comment-hearts text-info"></i> Mensaje Motivacional *
+                                </label>
+                                <textarea class="form-control" 
+                                          th:field="*{contenido}" 
+                                          th:class="${#fields.hasErrors('contenido')} ? 'form-control is-invalid' : 'form-control'"
+                                          rows="4" 
+                                          placeholder="Escribe un mensaje positivo y motivacional..."
+                                          maxlength="255"></textarea>
+                                <div th:if="${#fields.hasErrors('contenido')}" class="invalid-feedback">
+                                    <span th:errors="*{contenido}"></span>
+                                </div>
+                                <div class="form-text">
+                                    <span class="text-info">
+                                        <i class="fas fa-info-circle"></i> Mínimo 20 caracteres. 
+                                        No se permiten palabras negativas como "odio" o "feo".
+                                    </span>
+                                    <br>
+                                    <small class="text-muted">
+                                        <span id="contadorContenido">0</span>/255 caracteres
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <!-- Botones -->
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <button type="submit" class="btn btn-primary btn-custom w-100">
+                                        <i class="fas fa-paper-plane"></i> Enviar Mensaje
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <a th:href="@{/principal}" class="btn btn-secondary btn-custom w-100">
+                                        <i class="fas fa-arrow-left"></i> Volver a Principal
+                                    </a>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Información sobre mensajes motivacionales -->
+                <div class="text-center mt-4 fade-in-up">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-lightbulb"></i> Tips para Mensajes Motivacionales</h5>
+                        <ul class="list-unstyled mb-0 text-start">
+                            <li><i class="fas fa-star text-warning"></i> Sé auténtico y sincero</li>
+                            <li><i class="fas fa-star text-warning"></i> Enfócate en cualidades positivas</li>
+                            <li><i class="fas fa-star text-warning"></i> Usa palabras de aliento y esperanza</li>
+                            <li><i class="fas fa-star text-warning"></i> Recuerda que tus palabras pueden alegrar el día de alguien</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- JavaScript para funcionalidad del formulario -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos
+            const regaloFlor = document.getElementById('regaloFlor');
+            const regaloCarrito = document.getElementById('regaloCarrito');
+            const colorCarritoDiv = document.getElementById('colorCarrito');
+            const contenidoTextarea = document.querySelector('textarea[name="contenido"]');
+            const contadorContenido = document.getElementById('contadorContenido');
+            
+            // Función para mostrar/ocultar colores según el regalo
+            function toggleColorCarrito() {
+                if (regaloCarrito && regaloCarrito.checked) {
+                    colorCarritoDiv.style.display = 'block';
+                } else {
+                    colorCarritoDiv.style.display = 'none';
+                    // Limpiar selección de color si no es carrito
+                    const colores = document.querySelectorAll('input[name="regaloColor"]');
+                    colores.forEach(color => color.checked = false);
+                }
+            }
+            
+            // Event listeners para cambio de regalo
+            if (regaloFlor) regaloFlor.addEventListener('change', toggleColorCarrito);
+            if (regaloCarrito) regaloCarrito.addEventListener('change', toggleColorCarrito);
+            
+            // Inicializar estado
+            toggleColorCarrito();
+            
+            // Contador de caracteres para mensaje
+            function actualizarContadorContenido() {
+                if (contenidoTextarea && contadorContenido) {
+                    const longitud = contenidoTextarea.value.length;
+                    contadorContenido.textContent = longitud;
+                    
+                    // Cambiar color según la longitud
+                    if (longitud < 20) {
+                        contadorContenido.className = 'text-danger';
+                    } else if (longitud > 200) {
+                        contadorContenido.className = 'text-warning';
+                    } else {
+                        contadorContenido.className = 'text-success';
+                    }
+                    
+                    // Validar palabras prohibidas en tiempo real
+                    const contenido = contenidoTextarea.value.toLowerCase();
+                    if (contenido.includes('odio') || contenido.includes('feo')) {
+                        contenidoTextarea.classList.add('is-invalid');
+                    } else if (longitud >= 20) {
+                        contenidoTextarea.classList.remove('is-invalid');
+                        contenidoTextarea.classList.add('is-valid');
+                    } else {
+                        contenidoTextarea.classList.remove('is-valid', 'is-invalid');
+                    }
+                }
+            }
+            
+            // Event listener para el textarea
+            if (contenidoTextarea) {
+                contenidoTextarea.addEventListener('input', actualizarContadorContenido);
+                actualizarContadorContenido(); // Inicializar
+            }
+        });
+    </script>
+
+    <!-- Estilos adicionales -->
+    <style>
+        .regalo-option {
+            border: 2px solid #dee2e6;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .regalo-option:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.2);
+        }
+        
+        .regalo-option.selected {
+            border-color: #28a745;
+            background-color: #f8fff8;
+        }
+        
+        .regalo-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .color-option {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .color-option:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .color-circle {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px #dee2e6;
+        }
+    </style>
     
     <script th:replace="~{fragments/navbar.html :: footer-bootstrap}"></script>
 </body>

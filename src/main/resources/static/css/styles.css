@@ -266,3 +266,70 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Estilos para formulario de mensajes */
+.regalo-option {
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+}
+
+.regalo-option:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--hover-shadow);
+    transform: translateY(-2px);
+}
+
+.regalo-option.selected {
+    border-color: var(--success-color);
+    background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
+}
+
+.regalo-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.color-option {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.color-option:hover {
+    background-color: var(--light-bg);
+    border-color: var(--primary-color);
+}
+
+.color-circle {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: var(--card-shadow);
+}
+
+/* Validación visual mejorada */
+.form-control.is-valid {
+    border-color: var(--success-color);
+}
+
+.form-control.is-invalid {
+    border-color: var(--danger-color);
+}
+
+.form-select.is-valid {
+    border-color: var(--success-color);
+}
+
+.form-select.is-invalid {
+    border-color: var(--danger-color);
+}

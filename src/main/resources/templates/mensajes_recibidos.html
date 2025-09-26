@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensajes Recibidos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-12 main-content">
+                <div class="content-header">
+                    <div class="row align-items-center mb-4">
+                        <div class="col">
+                            <h2 class="mb-0">
+                                <i class="fas fa-envelope-open text-primary me-2"></i>
+                                Mensajes Recibidos
+                            </h2>
+                            <p class="text-muted mb-0">
+                                Bandeja de entrada de <strong th:text="${usuarioActual.nombre}">Usuario</strong>
+                            </p>
+                        </div>
+                        <div class="col-auto">
+                            <!-- Selector de usuario -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" 
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle me-2"></i>
+                                    [[${usuarioActual.nombre}]]
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li th:each="usuario : ${todosUsuarios}">
+                                        <a class="dropdown-item" 
+                                           th:href="@{/mensajes-recibidos(usuario=${usuario.id})}"
+                                           th:class="${usuario.id == usuarioActual.id} ? 'dropdown-item active' : 'dropdown-item'">
+                                            <i class="fas fa-user me-2"></i>
+                                            [[${usuario.nombre}]] [[${usuario.apellido}]]
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-envelope text-primary" style="font-size: 2rem;"></i>
+                                    <h4 class="mt-2 mb-1 text-primary" th:text="${totalMensajes}">0</h4>
+                                    <small class="text-muted">Total Mensajes Recibidos</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-gift text-success" style="font-size: 2rem;"></i>
+                                    <h4 class="mt-2 mb-1 text-success" th:text="${#lists.size(mensajesRecibidos)}">0</h4>
+                                    <small class="text-muted">Mensajes con Regalos</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-heart text-danger" style="font-size: 2rem;"></i>
+                                    <h4 class="mt-2 mb-1 text-danger">
+                                        <span th:if="${totalMensajes > 0}">❤️</span>
+                                        <span th:if="${totalMensajes == 0}">💔</span>
+                                    </h4>
+                                    <small class="text-muted">Estado del Corazón</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Mensajes -->
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Mensajes -->
+                        <div th:if="${!#lists.isEmpty(mensajesRecibidos)}" class="card border-0 shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-inbox me-2"></i>
+                                    Bandeja de Entrada ([[${totalMensajes}]] mensajes)
+                                </h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <div th:each="mensaje, iterStat : ${mensajesRecibidos}" 
+                                         class="list-group-item list-group-item-action mensaje-item">
+                                        <div class="row align-items-center">
+                                            <!-- Avatar y Remitente -->
+                                            <div class="col-md-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="remitente-avatar me-3">
+                                                        <i class="fas fa-user-circle text-primary" style="font-size: 3rem;"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-1 fw-bold">
+                                                            [[${mensaje.remitente.nombre}]] [[${mensaje.remitente.apellido}]]
+                                                        </h6>
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-envelope me-1"></i>
+                                                            [[${mensaje.remitente.correo}]]
+                                                        </small>
+                                                        <div class="mt-1">
+                                                            <span class="badge bg-info text-white small">
+                                                                Mensaje #[[${mensaje.id}]]
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Regalo Enviado -->
+                                            <div class="col-md-2">
+                                                <div class="text-center regalo-display">
+                                                    <!-- Flor Amarilla -->
+                                                    <div th:if="${mensaje.regaloTipo.name() == 'Flor'}" class="regalo-flor">
+                                                        <i class="fas fa-seedling text-warning" style="font-size: 2.5rem;"></i>
+                                                        <div class="mt-1">
+                                                            <span class="badge bg-warning text-dark">
+                                                                🌻 Flor Amarilla
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Carrito Coloreado -->
+                                                    <div th:if="${mensaje.regaloTipo.name() == 'Carrito'}" class="regalo-carrito">
+                                                        <i class="fas fa-shopping-cart" style="font-size: 2.5rem;"
+                                                           th:style="${mensaje.regaloColor != null} ? 'color: ' + ${mensaje.regaloColor.toLowerCase()} + ';' : 'color: #6c757d;'"></i>
+                                                        <div class="mt-1">
+                                                            <span class="badge" 
+                                                                  th:style="${mensaje.regaloColor != null} ? 'background-color: ' + ${mensaje.regaloColor.toLowerCase()} + '; color: white;' : 'background-color: #6c757d; color: white;'"
+                                                                  th:text="${mensaje.regaloColor != null} ? '🛒 Carrito ' + ${mensaje.regaloColor} : '🛒 Carrito'">
+                                                                🛒 Carrito
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Contenido del Mensaje -->
+                                            <div class="col-md-6">
+                                                <div class="mensaje-contenido">
+                                                    <div class="mensaje-bubble">
+                                                        <p class="mb-2" th:text="${mensaje.contenido}">
+                                                            Contenido del mensaje aquí...
+                                                        </p>
+                                                        <div class="mensaje-info d-flex justify-content-between align-items-center">
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-clock me-1"></i>
+                                                                Mensaje recibido
+                                                            </small>
+                                                            <span class="badge bg-success">
+                                                                <i class="fas fa-check me-1"></i>Recibido
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Acciones -->
+                                            <div class="col-md-1">
+                                                <div class="d-flex flex-column gap-2">
+                                                    <button class="btn btn-outline-primary btn-sm" title="Responder">
+                                                        <i class="fas fa-reply"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-success btn-sm" title="Me gusta">
+                                                        <i class="fas fa-heart"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje si no hay mensajes -->
+                        <div th:if="${#lists.isEmpty(mensajesRecibidos)}" class="text-center py-5">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body py-5">
+                                    <i class="fas fa-inbox text-muted" style="font-size: 4rem;"></i>
+                                    <h4 class="text-muted mt-3">No tienes mensajes</h4>
+                                    <p class="text-muted mb-4">
+                                        <strong th:text="${usuarioActual.nombre}">Usuario</strong> aún no ha recibido ningún mensaje.
+                                    </p>
+                                    <a href="/principal" class="btn btn-primary me-2">
+                                        <i class="fas fa-users me-2"></i>Ver Usuarios
+                                    </a>
+                                    <a href="/envio-mensaje" class="btn btn-outline-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Animación de entrada para mensajes
+        document.addEventListener('DOMContentLoaded', function() {
+            const mensajes = document.querySelectorAll('.mensaje-item');
+            mensajes.forEach((mensaje, index) => {
+                setTimeout(() => {
+                    mensaje.style.opacity = '0';
+                    mensaje.style.transform = 'translateY(20px)';
+                    mensaje.style.transition = 'all 0.5s ease';
+                    setTimeout(() => {
+                        mensaje.style.opacity = '1';
+                        mensaje.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100);
+            });
+        });
+
+        // Efecto hover en mensajes
+        document.querySelectorAll('.mensaje-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+                this.style.transform = '';
+                this.style.boxShadow = '';
+            });
+        });
+    </script>
+</body>
+</html>

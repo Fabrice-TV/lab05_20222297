@@ -14,8 +14,14 @@ public interface MensajesRepository extends JpaRepository<mensajes, Integer> {
     // Mensajes enviados por un usuario
     List<mensajes> findByRemitente(usuarios remitente);
     
-    // Mensajes recibidos por un usuario
+    // Mensajes recibidos por un usuario (ordenados por ID descendente - más recientes primero)
+    List<mensajes> findByDestinatarioOrderByIdDesc(usuarios destinatario);
+    
+    // Mensajes recibidos por un usuario (método simple)
     List<mensajes> findByDestinatario(usuarios destinatario);
+    
+    // Contar mensajes recibidos por usuario
+    Long countByDestinatario(usuarios destinatario);
     
     // Contar mensajes recibidos por usuario (para ranking)
     @Query("SELECT COUNT(m) FROM mensajes m WHERE m.destinatario.id = ?1")

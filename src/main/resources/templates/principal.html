@@ -73,12 +73,20 @@
                     
                     <div class="divider"></div>
                     
-                    <!-- Botón de enviar mensaje individual -->
-                    <div class="text-center">
-                        <a th:href="@{/envio-mensaje(destinatario=${usuario.id})}" 
-                           class="btn btn-primary btn-custom w-100">
-                            <i class="fas fa-paper-plane"></i> Enviar Mensaje
-                        </a>
+                    <!-- Botones de acciones -->
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <a th:href="@{/envio-mensaje(destinatario=${usuario.id})}" 
+                               class="btn btn-primary btn-custom w-100">
+                                <i class="fas fa-paper-plane"></i> Enviar
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a th:href="@{/mensajes-recibidos(usuario=${usuario.id})}" 
+                               class="btn btn-outline-primary btn-custom w-100">
+                                <i class="fas fa-envelope-open"></i> Mensajes
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

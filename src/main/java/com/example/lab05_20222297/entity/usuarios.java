@@ -31,23 +31,20 @@ public class usuarios {
     @NotBlank
     private String apellido;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @Size(max = 100,message = "Solo se soportan 100 caractéres")
     @NotBlank
     private String correo;
 
     @Column(nullable = false)
-    @NotBlank
     private int edad;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Size(max = 255,message = "Solo se soportan 255 caractéres")
-    @NotBlank
     private String descripcion;
 
     @Column(nullable = true)
     @Size(max = 255,message = "Solo se soportan 255 caractéres")
-    @NotBlank
     private String contrasena;
 
 }

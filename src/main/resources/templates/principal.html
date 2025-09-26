@@ -1,16 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
-<head th:replace="~{fragments/navbar.html :: header( title = 'Vista Principal')}"> </head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/navbar.html :: header( title = 'Vista Principal')}"></head>
 <body>
 
-<div class="card" style="width: 18rem;">
-    <img class="card-img-top" src="..." alt="Card image cap">
-    <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        <a href="#" class="btn btn-primary">Enviar Mensaje</a>
+<!-- Incluir navbar -->
+<div th:replace="~{fragments/navbar.html :: navbar}"></div>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="page-title fade-in-up">
+                <i class="fas fa-heart text-success"></i> Jardín de la Esperanza y Carritos de Amistad 
+                <i class="fas fa-shopping-cart text-primary"></i>
+            </h1>
+            <p class="text-center text-muted mb-5 fade-in-up">Conecta con personas increíbles y envía mensajes llenos de cariño</p>
+        </div>
+    </div>
+
+    <!-- Botón principal para enviar mensaje -->
+    <div class="row mb-4">
+        <div class="col-12 text-center fade-in-up">
+            <a th:href="@{/envio-mensaje}" class="btn btn-success btn-custom btn-main-action">
+                <i class="fas fa-paper-plane"></i> Enviar Nuevo Mensaje
+            </a>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Cards de usuarios -->
+    <div class="user-grid">
+        <div class="fade-in-up" th:each="usuario : ${usuarios}">
+            <div class="user-card">
+                <!-- Avatar y header -->
+                <div class="card-header text-center">
+                    <div class="user-avatar">
+                        <span th:text="${usuario.nombre.substring(0,1).toUpperCase()}">A</span>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3" th:text="${usuario.nombre + ' ' + usuario.apellido}">Nombre Completo</h5>
+                    
+                    <div class="user-info">
+                        <span class="info-icon"><i class="fas fa-envelope text-primary"></i></span>
+                        <span class="info-label">Correo:</span>
+                        <span class="info-value" th:text="${usuario.correo}">correo@ejemplo.com</span>
+                    </div>
+                    
+                    <div class="user-info">
+                        <span class="info-icon"><i class="fas fa-birthday-cake text-warning"></i></span>
+                        <span class="info-label">Edad:</span>
+                        <span class="info-value"><span th:text="${usuario.edad}">25</span> años</span>
+                    </div>
+                    
+                    <div class="user-info mb-3">
+                        <span class="info-icon"><i class="fas fa-user text-info"></i></span>
+                        <span class="info-label">Descripción:</span>
+                    </div>
+                    <p class="info-value text-muted" th:text="${usuario.descripcion}">Descripción del usuario...</p>
+                    
+                    <div class="divider"></div>
+                    
+                    <!-- Botón de enviar mensaje individual -->
+                    <div class="text-center">
+                        <a th:href="@{/envio-mensaje(destinatario=${usuario.id})}" 
+                           class="btn btn-primary btn-custom w-100">
+                            <i class="fas fa-paper-plane"></i> Enviar Mensaje
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje si no hay usuarios -->
+    <div class="row" th:if="${#lists.isEmpty(usuarios)}">
+        <div class="col-12 text-center">
+            <div class="alert alert-info fade-in-up">
+                <h4><i class="fas fa-info-circle"></i> ¡Aún no hay usuarios registrados!</h4>
+                <p>Sé el primero en unirte a nuestra comunidad de amistad.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mostrar mensaje de error si existe -->
+    <div class="row" th:if="${error}">
+        <div class="col-12">
+            <div class="alert alert-danger fade-in-up">
+                <h4><i class="fas fa-exclamation-triangle"></i> Error</h4>
+                <p th:text="${error}">Error message</p>
+            </div>
+        </div>
     </div>
 </div>
 
+<script th:replace="~{fragments/navbar.html :: footer-bootstrap}"></script>
 </body>
 </html>

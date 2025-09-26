@@ -1,14 +1,19 @@
 package com.example.lab05_20222297.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
+@Entity
+@Table(name = "mensajes")
+@Getter
+@Setter
 public class mensajes {
 
     @Id
@@ -16,23 +21,32 @@ public class mensajes {
     @Column(name = "id")
     private int id;
 
-    @Column(nullable = false)
-    private int remitente_id;
-    private int destinatario_id;
+    @ManyToOne
+    @JoinColumn(name = "remitente_id", nullable = false)
+    private usuarios remitente;
+
+    @ManyToOne
+    @JoinColumn(name = "destinatario_id", nullable = false)
+    private usuarios destinatario;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "regalo_tipo", nullable = false)
+    private RegaloTipo regaloTipo;
+
+    @Column(name = "regalo_color")
+    @Size(max = 30, message = "Solo se soportan 30 caracteres")
+    private String regaloColor;
 
     @Column(nullable = false)
-    private String regalo_tipo;
-
-    @Column(nullable = false)
-    @Size(max = 30,message = "Solo se soportan 30 caractéres")
-    private String regalo_color;
-
-    @Column(nullable = false)
-    @Size(max = 255,message = "Solo se soportan 255 caractéres")
+    @Size(max = 255, message = "Solo se soportan 255 caracteres")
+    @NotBlank
     private String contenido;
 
-    @Column
-    private Timestamp fecha_envio;
+    @Column(name = "fecha_envio")
+    @CreationTimestamp
+    private Timestamp fechaEnvio;
 
-
+    public enum RegaloTipo {
+        Flor, Carrito
+    }
 }

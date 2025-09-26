@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/navbar.html :: header( title = 'Test de Conexión')}"></head>
+<body>
+    <!-- Incluir navbar -->
+    <div th:replace="~{fragments/navbar.html :: navbar}"></div>
+    
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="user-card fade-in-up">
+                    <div class="card-header text-center">
+                        <h3 class="mb-0"><i class="fas fa-database text-warning"></i> Test de Conexión a Base de Datos</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert" th:classappend="${mensaje != null and mensaje.contains('exitosa') ? 'alert-success' : 'alert-danger'}" th:if="${mensaje}">
+                            <h4><i th:class="${mensaje != null and mensaje.contains('exitosa') ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle'}"></i> Resultado:</h4>
+                            <p th:text="${mensaje}">Mensaje de prueba</p>
+                        </div>
+                        
+                        <div class="divider"></div>
+                        
+                        <div class="text-center">
+                            <a href="/principal" class="btn btn-success btn-custom me-2">
+                                <i class="fas fa-home"></i> Ir a Principal
+                            </a>
+                            <a href="/test" class="btn btn-primary btn-custom">
+                                <i class="fas fa-redo"></i> Probar de nuevo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script th:replace="~{fragments/navbar.html :: footer-bootstrap}"></script>
+</body>
+</html>

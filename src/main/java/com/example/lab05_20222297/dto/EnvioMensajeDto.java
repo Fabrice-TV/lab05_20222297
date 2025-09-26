@@ -8,6 +8,9 @@ import lombok.Setter;
 @Setter
 public class EnvioMensajeDto {
 
+    @NotNull(message = "Debe seleccionar un remitente")
+    private Integer remitenteId;
+
     @NotNull(message = "Debe seleccionar un destinatario")
     private Integer destinatarioId;
 

@@ -46,10 +46,40 @@
                         <!-- Formulario de envío de mensaje -->
                         <form th:action="@{/envio-mensaje}" method="post" th:object="${mensajeDto}" novalidate>
                             
+                            <!-- Selección de remitente (quién envía) -->
+                            <div class="mb-4">
+                                <label for="remitenteId" class="form-label">
+                                    <i class="fas fa-user-plus text-success"></i> ¿Quién eres tú? (Remitente) *
+                                </label>
+                                <select class="form-select" 
+                                        th:field="*{remitenteId}" 
+                                        th:class="${#fields.hasErrors('remitenteId')} ? 'form-select is-invalid' : 'form-select'"
+                                        required>
+                                    <option value="">-- Selecciona tu identidad --</option>
+                                    <option th:each="usuario : ${usuarios}" 
+                                            th:value="${usuario.id}" 
+                                            th:text="${'🙋‍♀️ ' + usuario.nombre + ' ' + usuario.apellido + ' (' + usuario.correo + ')'}"
+                                            th:selected="${remitenteSeleccionado != null and remitenteSeleccionado.id == usuario.id}">
+                                        Usuario
+                                    </option>
+                                </select>
+                                <div th:if="${#fields.hasErrors('remitenteId')}" class="invalid-feedback">
+                                    <span th:errors="*{remitenteId}"></span>
+                                </div>
+                                <div class="form-text">
+                                    <small class="text-info">
+                                        <i class="fas fa-info-circle"></i> 
+                                        Selecciona quién eres para enviar el mensaje desde tu perfil
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+                            
                             <!-- Selección de destinatario -->
                             <div class="mb-4">
                                 <label for="destinatarioId" class="form-label">
-                                    <i class="fas fa-user text-primary"></i> Destinatario *
+                                    <i class="fas fa-heart text-primary"></i> ¿A quién le envías el mensaje? (Destinatario) *
                                 </label>
                                 <select class="form-select" 
                                         th:field="*{destinatarioId}" 
@@ -58,7 +88,7 @@
                                     <option value="">-- Seleccione un destinatario --</option>
                                     <option th:each="usuario : ${usuarios}" 
                                             th:value="${usuario.id}" 
-                                            th:text="${usuario.nombre + ' ' + usuario.apellido + ' (' + usuario.correo + ')'}"
+                                            th:text="${'💌 ' + usuario.nombre + ' ' + usuario.apellido + ' (' + usuario.correo + ')'}"
                                             th:selected="${destinatarioSeleccionado != null and destinatarioSeleccionado.id == usuario.id}">
                                         Usuario
                                     </option>

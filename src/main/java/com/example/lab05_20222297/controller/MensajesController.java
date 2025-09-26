@@ -84,6 +84,13 @@ public class MensajesController {
                                         "Debe seleccionar un color para el carrito");
             }
 
+            // Validar que el remitente exista
+            Optional<usuarios> remitente = usuariosRepository.findById(mensajeDto.getRemitenteId());
+            if (!remitente.isPresent()) {
+                bindingResult.rejectValue("remitenteId", "error.remitenteId", 
+                                        "El remitente seleccionado no existe");
+            }
+
             // Validar que el destinatario exista
             Optional<usuarios> destinatario = usuariosRepository.findById(mensajeDto.getDestinatarioId());
             if (!destinatario.isPresent()) {
@@ -91,10 +98,23 @@ public class MensajesController {
                                         "El destinatario seleccionado no existe");
             }
 
+            // Validar que remitente y destinatario no sean la misma persona
+            if (remitente.isPresent() && destinatario.isPresent() && 
+                remitente.get().getId() == destinatario.get().getId()) {
+                bindingResult.rejectValue("destinatarioId", "error.destinatarioId", 
+                                        "No puedes enviarte un mensaje a ti mismo");
+            }
+
             // Si hay errores, regresar al formulario
             if (bindingResult.hasErrors()) {
                 List<usuarios> listaUsuarios = usuariosRepository.findAll();
                 model.addAttribute("usuarios", listaUsuarios);
+                
+                // Mantener remitente seleccionado
+                if (mensajeDto.getRemitenteId() != null) {
+                    Optional<usuarios> rem = usuariosRepository.findById(mensajeDto.getRemitenteId());
+                    rem.ifPresent(usuario -> model.addAttribute("remitenteSeleccionado", usuario));
+                }
                 
                 // Mantener destinatario seleccionado
                 if (mensajeDto.getDestinatarioId() != null) {
@@ -108,11 +128,8 @@ public class MensajesController {
             // Crear el mensaje
             mensajes nuevoMensaje = new mensajes();
             
-            // Por simplicidad, asumiremos que el remitente es el primer usuario
-            // En una app real, obtendríamos del usuario logueado
-            usuarios remitente = usuariosRepository.findAll().get(0);
-            
-            nuevoMensaje.setRemitente(remitente);
+            // Usar el remitente seleccionado en el formulario
+            nuevoMensaje.setRemitente(remitente.get());
             nuevoMensaje.setDestinatario(destinatario.get());
             nuevoMensaje.setContenido(mensajeDto.getContenido());
             
@@ -133,7 +150,9 @@ public class MensajesController {
 
             // Mensaje de éxito
             redirectAttributes.addFlashAttribute("mensajeExito", 
-                "¡Mensaje enviado exitosamente a " + destinatario.get().getNombre() + " " + 
+                "¡Mensaje enviado exitosamente! " +
+                remitente.get().getNombre() + " " + remitente.get().getApellido() + 
+                " ha enviado un mensaje a " + destinatario.get().getNombre() + " " + 
                 destinatario.get().getApellido() + "! 🎉");
             
             return "redirect:/principal";
@@ -143,6 +162,12 @@ public class MensajesController {
             model.addAttribute("error", "Error al enviar el mensaje: " + e.getMessage());
             List<usuarios> listaUsuarios = usuariosRepository.findAll();
             model.addAttribute("usuarios", listaUsuarios);
+            
+            // Mantener remitente seleccionado
+            if (mensajeDto.getRemitenteId() != null) {
+                Optional<usuarios> rem = usuariosRepository.findById(mensajeDto.getRemitenteId());
+                rem.ifPresent(usuario -> model.addAttribute("remitenteSeleccionado", usuario));
+            }
             
             // Mantener destinatario seleccionado
             if (mensajeDto.getDestinatarioId() != null) {

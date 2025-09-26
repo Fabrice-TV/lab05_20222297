@@ -333,3 +333,32 @@ body {
 .form-select.is-invalid {
     border-color: var(--danger-color);
 }
+
+/* Estilos para ranking */
+.ranking-top {
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+}
+
+.ranking-top:hover {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.user-avatar {
+    transition: transform 0.2s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.1);
+}
+
+.table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background-color: var(--light-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}

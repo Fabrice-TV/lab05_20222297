@@ -16,6 +16,5 @@ public interface RankingRepository extends JpaRepository<ranking, Integer> {
     Optional<ranking> findByUsuario(usuarios usuario);
     
     // Ranking ordenado por total de regalos (descendente)
-    @Query("SELECT r FROM ranking r ORDER BY r.totalRegalos DESC")
-    List<ranking> findAllOrderByTotalRegalosDesc();
+    List<ranking> findAllByOrderByTotalRegalosDesc();
 }

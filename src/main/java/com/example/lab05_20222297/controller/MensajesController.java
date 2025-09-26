@@ -2,8 +2,10 @@ package com.example.lab05_20222297.controller;
 
 import com.example.lab05_20222297.dto.EnvioMensajeDto;
 import com.example.lab05_20222297.entity.mensajes;
+import com.example.lab05_20222297.entity.ranking;
 import com.example.lab05_20222297.entity.usuarios;
 import com.example.lab05_20222297.repository.MensajesRepository;
+import com.example.lab05_20222297.repository.RankingRepository;
 import com.example.lab05_20222297.repository.UsuariosRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class MensajesController {
 
     @Autowired
     private MensajesRepository mensajesRepository;
+
+    @Autowired
+    private RankingRepository rankingRepository;
 
     // Mostrar formulario de envío de mensajes
     @GetMapping("/envio-mensaje")
@@ -123,6 +128,9 @@ public class MensajesController {
             // Guardar mensaje
             mensajesRepository.save(nuevoMensaje);
 
+            // Actualizar ranking del destinatario
+            actualizarRankingDestinatario(destinatario.get());
+
             // Mensaje de éxito
             redirectAttributes.addFlashAttribute("mensajeExito", 
                 "¡Mensaje enviado exitosamente a " + destinatario.get().getNombre() + " " + 
@@ -146,10 +154,22 @@ public class MensajesController {
         }
     }
 
-    // Ruta temporal para ranking
-    @GetMapping("/ranking")
-    public String ranking(Model model) {
-        model.addAttribute("mensaje", "Página de ranking en construcción...");
-        return "test"; // Reutilizamos la página de test temporalmente
+    // Método helper para actualizar el ranking del destinatario
+    private void actualizarRankingDestinatario(usuarios destinatario) {
+        // Buscar ranking existente del destinatario
+        Optional<ranking> rankingExistente = rankingRepository.findByUsuario(destinatario);
+        
+        if (rankingExistente.isPresent()) {
+            // Si existe, incrementar el total de regalos
+            ranking rankingUsuario = rankingExistente.get();
+            rankingUsuario.setTotalRegalos(rankingUsuario.getTotalRegalos() + 1);
+            rankingRepository.save(rankingUsuario);
+        } else {
+            // Si no existe, crear nuevo registro de ranking
+            ranking nuevoRanking = new ranking();
+            nuevoRanking.setUsuario(destinatario);
+            nuevoRanking.setTotalRegalos(1);
+            rankingRepository.save(nuevoRanking);
+        }
     }
 }
